@@ -1,7 +1,10 @@
+@import 'variables';
+@import 'base-style';
+
 $blue: rgb(100, 190, 220);
 
 p {
   font-size: 20px;
-  color: black;
+  color: red;
   width: 200px;
 }

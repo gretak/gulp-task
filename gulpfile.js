@@ -1,4 +1,4 @@
-
+// required package
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var cssmin = require('gulp-minify-css');
@@ -8,6 +8,7 @@ var uglify = require('gulp-uglify');
 var lint = require('./config/sass.js');
 var jshint = require('gulp-jshint');
 var webserver = require('gulp-webserver');
+var inject = require('gulp-inject');
 
 
 // scripts task + lint
@@ -54,6 +55,7 @@ gulp.task('watch', function() {
   gulp.watch('./src/sass/*.scss', ['styles']);
 });
 
+//dev server
 gulp.task('webserver', function() {
   gulp.src('dist/')
     .pipe(webserver({
@@ -64,8 +66,24 @@ gulp.task('webserver', function() {
     }));
 });
 
+//copy task
+gulp.task('copy', function() {
+  gulp.src('index.html', {cwd: './src/'})
+  .pipe(gulp.dest('./dist/'));
+});
 
+//add paths to index.html
+gulp.task('index', function () {
+  var target = gulp.src('./dist/index.html')
+  var sources = gulp.src(['./dist/css/**.min.css', './dist/js/**.min.js'], {read: false});
+  return target.pipe(inject(sources, { ignorePath: 'dist', addRootSlash: false}))
+  .pipe(gulp.dest('./dist'));
+});
 
-//compiles all the gulp tasks together
-gulp.task('default', ['scripts', 'styles', 'lint', 'js-hint' ,'watch', 'webserver' ]);
+//all gulp tasks
+gulp.task('default', ['scripts', 'styles', 'copy' ]);
+
+//testing and dev server running
+gulp.task('test', ['lint','js-hint' ,'watch', 'webserver', 'index']);
+
 
