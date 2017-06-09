@@ -1,4 +1,3 @@
-'use strict';
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
@@ -7,10 +6,11 @@ var rename = require("gulp-rename");
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var lint = require('./config/sass.js');
-const jshint = require('gulp-jshint');
+var jshint = require('gulp-jshint');
+var webserver = require('gulp-webserver');
 
 
-// scripts task
+// scripts task + lint
 gulp.task('scripts', function() {
   return gulp.src('./src/js/*.js')
     .pipe(concat('app.js'))
@@ -21,7 +21,6 @@ gulp.task('scripts', function() {
     }))
     .pipe(gulp.dest('./dist/js/'));
 });
-
 gulp.task('js-hint', function () {
   return gulp.src(['./src/js/*.js'])
     .pipe(jshint('./config/.jshintrc'))
@@ -29,7 +28,7 @@ gulp.task('js-hint', function () {
 });
 
 
-// styles task
+// styles task + lint
 gulp.task('styles', function() {
   return gulp.src('./src/sass/*.scss')
     .pipe(sass())
@@ -40,7 +39,6 @@ gulp.task('styles', function() {
     }))
     .pipe(gulp.dest('./dist/css/'));
 });
-
 gulp.task('lint', function() {
    gulp.src('./src/sass/**.s+(a|c)ss')
     .pipe(lint({
@@ -56,6 +54,18 @@ gulp.task('watch', function() {
   gulp.watch('./src/sass/*.scss', ['styles']);
 });
 
+gulp.task('webserver', function() {
+  gulp.src('dist/')
+    .pipe(webserver({
+      livereload: true,
+      fallback: 'index.html', 
+      directoryListing: {enable: true, path: '/dist/index.html'},
+      open: true,
+    }));
+});
+
+
+
 //compiles all the gulp tasks together
-gulp.task('default', ['scripts', 'styles', 'lint', 'js-hint' ,'watch', ]);
+gulp.task('default', ['scripts', 'styles', 'lint', 'js-hint' ,'watch', 'webserver' ]);
 
