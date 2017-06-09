@@ -1,3 +1,5 @@
+'use strict';
+
 //require gulp
 var gulp = require('gulp');
 
@@ -7,6 +9,9 @@ var cssmin = require('gulp-minify-css');
 var rename = require("gulp-rename");
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
+//var scsslint = require('./config/scss-lint.yml');
+
+var lint = require('./config/sass.js');
 
 // scripts task
 gulp.task('scripts', function() {
@@ -32,6 +37,16 @@ gulp.task('styles', function() {
     .pipe(gulp.dest('./dist/css/'));
 });
 
+
+gulp.task('lint', function() {
+   gulp.src('./src/sass/**.s+(a|c)ss')
+    .pipe(lint({
+      configFile: './config/scss-lint.yml'
+    }))
+    .pipe(lint.format())
+    .pipe(lint.failOnError())
+});
+
 // watch task
 gulp.task('watch', function() {
   gulp.watch('./src/js/*.js', ['scripts']);
@@ -39,5 +54,5 @@ gulp.task('watch', function() {
 });
 
 //compiles all the gulp tasks together
-gulp.task('default', ['scripts', 'styles', 'watch']);
+gulp.task('default', ['scripts', 'styles', 'lint', 'watch', ]);
 
